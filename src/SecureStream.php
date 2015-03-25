@@ -43,13 +43,17 @@ class SecureStream extends Stream implements DuplexStreamInterface
 
     public function handleData($stream)
     {
-        $data = stream_get_contents($stream);
+		try {
+			$data = stream_get_contents($stream);
 
-        $this->emit('data', [$data, $this]);
+			$this->emit('data', [$data, $this]);
 
-        if (!is_resource($stream) || feof($stream)) {
-            $this->end();
-        }
+			if (!is_resource($stream) || feof($stream)) {
+				$this->end();
+			}
+		} catch (\Exception $e) {
+			$this->emit('error', array($e, $this));
+		}
     }
 
     public function pause()
