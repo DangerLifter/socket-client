@@ -19,5 +19,8 @@
         "branch-alias": {
             "dev-master": "0.4-dev"
         }
+    },
+    "replace": {
+        "reactphp/socket-client":"0.4.*"
     }
 }
