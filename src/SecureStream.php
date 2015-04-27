@@ -46,7 +46,8 @@ class SecureStream extends Stream implements DuplexStreamInterface
 		try {
 			stream_set_timeout($stream, 10);
 
-			$data = stream_get_contents($stream);
+			//$data = stream_get_contents($stream);
+			$data = fread($stream, $this->bufferSize);
 
 			$this->emit('data', [$data, $this]);
 
