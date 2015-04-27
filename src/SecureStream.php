@@ -44,9 +44,17 @@ class SecureStream extends Stream implements DuplexStreamInterface
     public function handleData($stream)
     {
 		try {
+			stream_set_timeout($stream, 10);
+
 			$data = stream_get_contents($stream);
 
 			$this->emit('data', [$data, $this]);
+
+			$info = stream_get_meta_data($stream);
+
+			if ($info['timed_out']) {
+				throw new \Exception('[TEST CODE] Stream connection timeout.');
+			}
 
 			if (!is_resource($stream) || feof($stream)) {
 				$this->end();
