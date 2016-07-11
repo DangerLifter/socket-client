@@ -12,11 +12,28 @@ class Connector implements ConnectorInterface
 {
     private $loop;
     private $resolver;
+    private $bindIp = null;
+    /*
+     * @var callable
+     */
+    private $streamFactory = null;
 
     public function __construct(LoopInterface $loop, Resolver $resolver)
     {
         $this->loop = $loop;
         $this->resolver = $resolver;
+    }
+
+    public function setStreamFactory(callable $factory)
+    {
+        $this->streamFactory = $factory;
+        return $this;
+    }
+
+    public function setBindIp($ip)
+    {
+        $this->bindIp = $ip;
+        return $this;
     }
 
     public function create($host, $port)
@@ -37,6 +54,10 @@ class Connector implements ConnectorInterface
             $contextOpts['ssl']['SNI_enabled'] = true;
             $contextOpts['ssl']['SNI_server_name'] = $hostName;
             $contextOpts['ssl']['peer_name'] = $hostName;
+        }
+
+        if ($this->bindIp) {
+            $contextOpts['socket']['bindto'] = $this->bindIp;
         }
 
         $flags = STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT;
@@ -88,7 +109,12 @@ class Connector implements ConnectorInterface
 
     public function handleConnectedSocket($socket)
     {
-        return new Stream($socket, $this->loop);
+        /**
+         * @var callable $factory
+         */
+        $factory = $this->streamFactory;
+        if (!$factory) return new Stream($socket, $this->loop);
+        return $factory($socket, $this->loop);
     }
 
     protected function getSocketUrl($host, $port)
