@@ -57,7 +57,9 @@ class Connector implements ConnectorInterface
         }
 
         if ($this->bindIp) {
-            $contextOpts['socket']['bindto'] = $this->bindIp;
+            $ip = $this->bindIp;
+            if (false === strpos($this->bindIp, ':')) $ip .= ':0';
+            $contextOpts['socket']['bindto'] = $ip;
         }
 
         $flags = STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT;
