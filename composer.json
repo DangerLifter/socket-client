@@ -21,6 +21,6 @@
         }
     },
     "replace": {
-        "reactphp/socket-client":"0.4.*"
+        "react/socket-client":"0.4.*"
     }
 }
