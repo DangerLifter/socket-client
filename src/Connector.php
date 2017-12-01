@@ -10,6 +10,9 @@ use React\Promise\Deferred;
 
 class Connector implements ConnectorInterface
 {
+	// https://github.com/reactphp/socket/issues/139
+	private $_socket = null;
+
     private $loop;
     private $resolver;
     private $bindIp = null;
@@ -72,6 +75,8 @@ class Connector implements ConnectorInterface
                 $errno
             ));
         }
+
+		$this->_socket = $socket;
 
         stream_set_blocking($socket, 0);
 
